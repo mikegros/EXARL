@@ -225,7 +225,7 @@ class KerasTD3(exarl.ExaAgent):
     def has_data(self):
         """return true if agent has experiences from simulation
         """
-        return (self.memory._mem_length > 0)
+        return (self.memory.size > 0)
 
     # For distributed actors #
     def get_weights(self):
