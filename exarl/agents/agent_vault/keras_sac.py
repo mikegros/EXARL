@@ -184,13 +184,10 @@ class SAC(exarl.ExaAgent):
         with tf.GradientTape() as tape:
             sampled_means, sampled_sds = self.actor(states)
             dist         = tfp.distributions.TruncatedNormal(sampled_means, sampled_sds, self.lower_bound, self.upper_bound)
-            # dist         = tfp.distributions.Normal(sampled_means, sampled_sds)
             actions      = dist.sample()
-            # actions      = tf.clip_by_value(actions, self.lower_bound, self.upper_bound)
             action_lp    = tf.reduce_sum(dist.log_prob(actions), axis=1)
             q_value      = self.critic1([states, actions], training=True)
             loss         = -tf.math.reduce_mean(q_value - self.alpha * action_lp)
-        # tf.print("Actor Loss: ", loss)
         gradient = tape.gradient(loss, self.actor.trainable_variables)
         self.actor.optimizer.apply_gradients(zip(gradient, self.actor.trainable_variables))
 
