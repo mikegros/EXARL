@@ -273,19 +273,21 @@ class ExaExaaltVE(gym.Env):
                         '\n')
                 break
 
+        self.reward = 0
         if (self.WCT >= self.RUN_TIME):
+            self.reward = (len(self.traj)-1)/float(self.WCT*self.nWorkers)
             done = True
 
         """ Iterates the testing process forward one step """
 
-        reward        = len(self.traj)/float(self.WCT*self.nWorkers)
+        # reward        = len(self.traj)/float(self.WCT*self.nWorkers)
         current_state = self.traj[-1]
 
         next_state = self.generate_data()
        
         info = None
         print(reward, " ", done)
-        self.render(taskList,starting_state,current_state)
+        # self.render(taskList,starting_state,current_state)
         return next_state, reward, done, False, info
 
     def reset(self):
