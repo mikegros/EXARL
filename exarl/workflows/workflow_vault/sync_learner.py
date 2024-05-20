@@ -776,10 +776,12 @@ class SYNC(exarl.ExaWorkflow):
             # Send the done signal to the rest
             ExaComm.env_comm.bcast(self.done_episode, 0)
         else:
+            # I dont know that this is intentional, but in the sync learner this else statement never triggers
+            #     because the only rank is both a learner and agent.
             keep_running = True
             while keep_running:
                 keep_running = self.actor(exalearner, nepisodes)
-                self.debug("Actor:", keep_running)
+                do_convergence_check = self.learner(exalearner, nepisodes, 0)
 
     def get_total_episodes_run(self):
         """
