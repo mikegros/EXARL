@@ -32,8 +32,7 @@ from tensorflow.keras.optimizers import Adam
 
 import exarl
 from exarl.utils.globals import ExaGlobals
-from exarl.agents.replay_buffers.replay_buffer import ReplayBuffer
-from exarl.agents.replay_buffers.nStep_buffer  import nStepBuffer
+from exarl.agents.replay_buffers.buffer import Buffer
 logger = ExaGlobals.setup_logger(__name__)
 
 from exarl.agents.models.tf_model import Tensorflow_Model
@@ -71,10 +70,7 @@ class KerasTD3Softmax(exarl.ExaAgent):
         self.per_buffer = np.ones((self.buffer_capacity, 1))
         assert self.horizon >= 1, "Invalid Horizon Value: " + str(self.horizon)
         print("HORIZON: ",self.horizon)
-        if self.horizon == 1:
-            self.memory = ReplayBuffer(self.buffer_capacity, env.observation_space, env.action_space)
-        else:
-            self.memory = nStepBuffer(self.buffer_capacity, self.horizon, self.gamma, observation_space=env.observation_space, action_space=env.action_space)
+        self.memory = Buffer.create(observation_space=env.observation_space, action_space=env.action_space)
 
         # Setup Optimizers
         critic_lr = ExaGlobals.lookup_params('critic_lr')
@@ -194,9 +190,8 @@ class KerasTD3Softmax(exarl.ExaAgent):
         for (target_weight, weight) in zip(target_weights, weights):
             target_weight.assign(weight * self.tau + target_weight * (1.0 - self.tau))
 
-    def update(self, state_batch, action_batch, reward_batch, next_state_batch, done_batch, info_batch):
+    def update(self, state_batch, action_batch, reward_batch, next_state_batch, done_batch):
         if self.ntrain_calls % self.critic_update_freq == 0:
-            # self.train_critic(state_batch, action_batch, reward_batch, next_state_batch, done_batch, info_batch)
             self.train_critic(state_batch, action_batch, reward_batch, next_state_batch, done_batch)
         if self.ntrain_calls % self.actor_update_freq == 0:
             self.train_actor(state_batch)
@@ -217,7 +212,7 @@ class KerasTD3Softmax(exarl.ExaAgent):
     def train(self, batch):
         """ Method used to train """
         self.ntrain_calls += 1
-        self.update(batch[0], batch[1], batch[2], batch[3], batch[4], batch[5])
+        self.update(batch[0], batch[1], batch[2], batch[3], batch[4])
         self.update_target()
 
     def update_target(self):

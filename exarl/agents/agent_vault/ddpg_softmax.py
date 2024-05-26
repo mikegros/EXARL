@@ -62,10 +62,8 @@ class DDPGSoftmax(exarl.ExaAgent):
         # Experience data
         self.horizon    = ExaGlobals.lookup_params('horizon')
         assert self.horizon >= 1, "Invalid Horizon Value: " + str(self.horizon)
-        if self.horizon == 1:
-            self._replay = Buffer.create(observation_space=env.observation_space, action_space=env.action_space)
-        else:
-            self._replay = nStepBuffer(ExaGlobals.lookup_params('buffer_capacity'), self.horizon, self.gamma, observation_space=env.observation_space, action_space=env.action_space)
+
+        self._replay = Buffer.create(observation_space=env.observation_space, action_space=env.action_space)
 
         self.actor = Tensorflow_Model.create("ActorSoftmax", 
                                               observation_space=env.observation_space, 

@@ -229,10 +229,10 @@ class KerasTD3(exarl.ExaAgent):
 
     # For distributed actors #
     def get_weights(self):
-        return self.target_actor.get_weights()
+        return self.actor.get_weights()
 
     def set_weights(self, weights):
-        self.target_actor.set_weights(weights)
+        self.actor.set_weights(weights)
 
     def train_return(self, args):
         pass

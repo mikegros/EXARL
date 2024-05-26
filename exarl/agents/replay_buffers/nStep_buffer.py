@@ -58,5 +58,8 @@ class nStepBuffer(ReplayBuffer):
         # Append nStep done indicators
         return_list.append(np.array(done_batch))
 
+        # Append nStep info
+        return_list.append(self._data[-1][indices])
+
         return return_list
 
